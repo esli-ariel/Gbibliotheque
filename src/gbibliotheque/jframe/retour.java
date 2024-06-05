@@ -4,19 +4,60 @@
  */
 package gbibliotheque.jframe;
 
+import java.awt.Toolkit;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
+import java.sql.SQLException;
+import java.text.SimpleDateFormat;
+import java.util.Vector;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.swing.JOptionPane;
+import javax.swing.table.DefaultTableModel;
+import jframe.ManageBooks;
+
 /**
  *
  * @author kadio
  */
 public class retour extends javax.swing.JFrame {
-
+     initComponents();
+        Connect();
+        Record_Load();
+        showPieChart();
+        setIconImage();
+          Connection con;
+    PreparedStatement pst;
+    ResultSet rs;
+    DefaultTableModel d;
     /**
      * Creates new form Gretour
      */
     public retour() {
         initComponents();
+        set.title("Details emprunts");
     }
+     private void setIconImage() {
+        setIconImage(Toolkit.getDefaultToolkit().getImage(getClass().getResource("Book.png")));
 
+    }
+    // Database connectivity method
+    public void Connect() {
+        try {
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            con = DriverManager.getConnection("jdbc:mysql://localhost/library_management_system", "root", "");
+        } catch (SQLException ex) {
+            Logger.getLogger(ManageBooks.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (ClassNotFoundException ex) {
+            Logger.getLogger(ManageBooks.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        // Loading issue book details from the database table
+    
+
+    
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -59,16 +100,17 @@ public class retour extends javax.swing.JFrame {
         jLabel27 = new javax.swing.JLabel();
         jPanel4 = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
+        jLabel3 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
         jPanel1.setBackground(new java.awt.Color(255, 255, 255));
         jPanel1.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
-        jPanel2.setBackground(new java.awt.Color(255, 51, 51));
+        jPanel2.setBackground(new java.awt.Color(0, 255, 204));
         jPanel2.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
-        jLabel2.setFont(new java.awt.Font("Tahoma", 1, 24)); // NOI18N
+        jLabel2.setFont(new java.awt.Font("Tahoma", 1, 48)); // NOI18N
         jLabel2.setForeground(new java.awt.Color(255, 255, 255));
         jLabel2.setIcon(new javax.swing.ImageIcon(getClass().getResource("/gbibliotheque/adminIcons/books-26.png"))); // NOI18N
         jLabel2.setText("Livre");
@@ -97,19 +139,19 @@ public class retour extends javax.swing.JFrame {
         jLabel5.setBackground(new java.awt.Color(255, 255, 255));
         jLabel5.setFont(new java.awt.Font("Tahoma", 1, 18)); // NOI18N
         jLabel5.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel5.setText("Book Name    :");
+        jLabel5.setText("Nom Livre:");
         jPanel2.add(jLabel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 280, 140, -1));
 
         jLabel6.setBackground(new java.awt.Color(255, 255, 255));
         jLabel6.setFont(new java.awt.Font("Tahoma", 1, 18)); // NOI18N
         jLabel6.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel6.setText("Student Id     :");
+        jLabel6.setText("Id Adherent    :");
         jPanel2.add(jLabel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 330, -1, -1));
 
         jLabel7.setBackground(new java.awt.Color(255, 255, 255));
         jLabel7.setFont(new java.awt.Font("Tahoma", 1, 18)); // NOI18N
         jLabel7.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel7.setText("Issue Id         :");
+        jLabel7.setText("Id Emprunts    :");
         jPanel2.add(jLabel7, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 210, 150, -1));
 
         lbl_issueid.setBackground(new java.awt.Color(255, 255, 255));
@@ -141,7 +183,7 @@ public class retour extends javax.swing.JFrame {
         jLabel9.setBackground(new java.awt.Color(255, 255, 255));
         jLabel9.setFont(new java.awt.Font("Tahoma", 1, 18)); // NOI18N
         jLabel9.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel9.setText("Issue Date      :");
+        jLabel9.setText("Date  Emprunt   :");
         jPanel2.add(jLabel9, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 420, -1, -1));
 
         lbl_issuedate.setBackground(new java.awt.Color(255, 255, 255));
@@ -152,8 +194,8 @@ public class retour extends javax.swing.JFrame {
         jLabel10.setBackground(new java.awt.Color(255, 255, 255));
         jLabel10.setFont(new java.awt.Font("Tahoma", 1, 18)); // NOI18N
         jLabel10.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel10.setText("Book Id          :");
-        jPanel2.add(jLabel10, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 240, 170, 30));
+        jLabel10.setText("Id Livre      :");
+        jPanel2.add(jLabel10, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 240, 140, 30));
 
         lbl_bookid.setBackground(new java.awt.Color(255, 255, 255));
         lbl_bookid.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
@@ -168,7 +210,7 @@ public class retour extends javax.swing.JFrame {
         jLabel13.setBackground(new java.awt.Color(255, 255, 255));
         jLabel13.setFont(new java.awt.Font("Tahoma", 1, 18)); // NOI18N
         jLabel13.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel13.setText("Student Name :");
+        jLabel13.setText("Nom Adherent :");
         jPanel2.add(jLabel13, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 380, -1, -1));
 
         lbl_studentname.setBackground(new java.awt.Color(255, 255, 255));
@@ -180,11 +222,11 @@ public class retour extends javax.swing.JFrame {
 
         jLabel11.setBackground(new java.awt.Color(255, 51, 51));
         jLabel11.setFont(new java.awt.Font("Tahoma", 1, 24)); // NOI18N
-        jLabel11.setForeground(new java.awt.Color(255, 51, 51));
-        jLabel11.setText("  Return Book");
+        jLabel11.setForeground(new java.awt.Color(0, 255, 204));
+        jLabel11.setText("Retourner Livre");
         jPanel1.add(jLabel11, new org.netbeans.lib.awtextra.AbsoluteConstraints(540, 170, -1, -1));
 
-        jPanel8.setBackground(new java.awt.Color(255, 51, 51));
+        jPanel8.setBackground(new java.awt.Color(0, 255, 204));
 
         javax.swing.GroupLayout jPanel8Layout = new javax.swing.GroupLayout(jPanel8);
         jPanel8.setLayout(jPanel8Layout);
@@ -199,7 +241,7 @@ public class retour extends javax.swing.JFrame {
 
         jPanel1.add(jPanel8, new org.netbeans.lib.awtextra.AbsoluteConstraints(510, 240, -1, 10));
 
-        jPanel9.setBackground(new java.awt.Color(51, 153, 255));
+        jPanel9.setBackground(new java.awt.Color(255, 0, 0));
         jPanel9.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         jPanel9.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
@@ -208,24 +250,25 @@ public class retour extends javax.swing.JFrame {
         });
         jPanel9.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
-        jLabel22.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
+        jLabel22.setFont(new java.awt.Font("Segoe UI", 1, 24)); // NOI18N
         jLabel22.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel22.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel22.setText("X");
         jLabel22.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 jLabel22MouseClicked(evt);
             }
         });
-        jPanel9.add(jLabel22, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 0, -1, -1));
+        jPanel9.add(jLabel22, new org.netbeans.lib.awtextra.AbsoluteConstraints(6, 0, 50, -1));
 
         jPanel1.add(jPanel9, new org.netbeans.lib.awtextra.AbsoluteConstraints(1160, 0, 60, 30));
 
-        txt_bookid.setBorder(javax.swing.BorderFactory.createMatteBorder(0, 0, 2, 0, new java.awt.Color(255, 51, 51)));
+        txt_bookid.setBorder(javax.swing.BorderFactory.createMatteBorder(0, 0, 2, 0, new java.awt.Color(0, 255, 204)));
         txt_bookid.setForeground(new java.awt.Color(51, 51, 51));
         txt_bookid.setCaretColor(new java.awt.Color(204, 204, 204));
         txt_bookid.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
         txt_bookid.setPhColor(new java.awt.Color(51, 51, 51));
-        txt_bookid.setPlaceholder("Enter Book Id");
+        txt_bookid.setPlaceholder("entrer ID livre");
         txt_bookid.addFocusListener(new java.awt.event.FocusAdapter() {
             public void focusLost(java.awt.event.FocusEvent evt) {
                 txt_bookidFocusLost(evt);
@@ -234,16 +277,16 @@ public class retour extends javax.swing.JFrame {
         jPanel1.add(txt_bookid, new org.netbeans.lib.awtextra.AbsoluteConstraints(610, 290, 250, -1));
 
         jLabel23.setFont(new java.awt.Font("Tahoma", 1, 16)); // NOI18N
-        jLabel23.setForeground(new java.awt.Color(255, 51, 51));
-        jLabel23.setText("Book Id:");
+        jLabel23.setForeground(new java.awt.Color(0, 255, 204));
+        jLabel23.setText("Id Livre:");
         jPanel1.add(jLabel23, new org.netbeans.lib.awtextra.AbsoluteConstraints(520, 300, -1, 30));
 
-        txt_studentid.setBorder(javax.swing.BorderFactory.createMatteBorder(0, 0, 2, 0, new java.awt.Color(255, 51, 51)));
+        txt_studentid.setBorder(javax.swing.BorderFactory.createMatteBorder(0, 0, 2, 0, new java.awt.Color(0, 255, 204)));
         txt_studentid.setForeground(new java.awt.Color(51, 51, 51));
         txt_studentid.setCaretColor(new java.awt.Color(204, 204, 204));
         txt_studentid.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
         txt_studentid.setPhColor(new java.awt.Color(51, 51, 51));
-        txt_studentid.setPlaceholder("Enter Student Id");
+        txt_studentid.setPlaceholder("entrer Id adherent");
         txt_studentid.addFocusListener(new java.awt.event.FocusAdapter() {
             public void focusLost(java.awt.event.FocusEvent evt) {
                 txt_studentidFocusLost(evt);
@@ -252,27 +295,27 @@ public class retour extends javax.swing.JFrame {
         jPanel1.add(txt_studentid, new org.netbeans.lib.awtextra.AbsoluteConstraints(620, 410, 240, -1));
 
         jLabel25.setFont(new java.awt.Font("Tahoma", 1, 16)); // NOI18N
-        jLabel25.setForeground(new java.awt.Color(255, 51, 51));
-        jLabel25.setText("Student Id:");
+        jLabel25.setForeground(new java.awt.Color(0, 255, 204));
+        jLabel25.setText("Id Adherent:");
         jPanel1.add(jLabel25, new org.netbeans.lib.awtextra.AbsoluteConstraints(510, 420, 110, 30));
 
-        returnbutton.setBackground(new java.awt.Color(255, 51, 51));
-        returnbutton.setText("return book");
+        returnbutton.setBackground(new java.awt.Color(0, 255, 204));
+        returnbutton.setText("Retourner");
         returnbutton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 returnbuttonActionPerformed(evt);
             }
         });
-        jPanel1.add(returnbutton, new org.netbeans.lib.awtextra.AbsoluteConstraints(650, 570, 150, 50));
+        jPanel1.add(returnbutton, new org.netbeans.lib.awtextra.AbsoluteConstraints(720, 520, 150, 50));
 
-        findbutton.setBackground(new java.awt.Color(51, 153, 255));
+        findbutton.setBackground(new java.awt.Color(0, 102, 102));
         findbutton.setText("CHERCHER");
         findbutton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 findbuttonActionPerformed(evt);
             }
         });
-        jPanel1.add(findbutton, new org.netbeans.lib.awtextra.AbsoluteConstraints(640, 510, 150, 50));
+        jPanel1.add(findbutton, new org.netbeans.lib.awtextra.AbsoluteConstraints(520, 520, 150, 50));
 
         jLabel27.setFont(new java.awt.Font("Tahoma", 1, 17)); // NOI18N
         jLabel27.setForeground(new java.awt.Color(51, 51, 51));
@@ -283,12 +326,13 @@ public class retour extends javax.swing.JFrame {
                 jLabel27MouseClicked(evt);
             }
         });
-        jPanel1.add(jLabel27, new org.netbeans.lib.awtextra.AbsoluteConstraints(660, 10, 460, 40));
+        jPanel1.add(jLabel27, new org.netbeans.lib.awtextra.AbsoluteConstraints(660, 10, 100, 40));
 
-        jPanel4.setBackground(new java.awt.Color(51, 153, 255));
+        jPanel4.setBackground(new java.awt.Color(0, 102, 102));
 
         jLabel1.setFont(new java.awt.Font("Tahoma", 1, 17)); // NOI18N
         jLabel1.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/gbibliotheque/AddNewBookIcons/icons8_Rewind_48px.png"))); // NOI18N
         jLabel1.setText("RETOUR");
         jLabel1.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         jLabel1.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -301,20 +345,19 @@ public class retour extends javax.swing.JFrame {
         jPanel4.setLayout(jPanel4Layout);
         jPanel4Layout.setHorizontalGroup(
             jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel4Layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, 128, Short.MAX_VALUE)
-                .addContainerGap())
+            .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, 140, Short.MAX_VALUE)
         );
         jPanel4Layout.setVerticalGroup(
             jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel4Layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+            .addComponent(jLabel1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 40, Short.MAX_VALUE)
         );
 
         jPanel1.add(jPanel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 140, 40));
+
+        jLabel3.setFont(new java.awt.Font("Yu Gothic UI Semibold", 1, 24)); // NOI18N
+        jLabel3.setForeground(new java.awt.Color(0, 102, 102));
+        jLabel3.setText("jLabel3");
+        jPanel1.add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(770, 20, 120, 30));
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -373,7 +416,7 @@ public class retour extends javax.swing.JFrame {
             txt_bookid.setText("");
             txt_studentid.setText("");
         } else {
-            JOptionPane.showMessageDialog(this, "Book Returned Failed!");
+            JOptionPane.showMessageDialog(this, "echec !");
         }
     }//GEN-LAST:event_returnbuttonActionPerformed
 
@@ -439,6 +482,7 @@ public class retour extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel23;
     private javax.swing.JLabel jLabel25;
     private javax.swing.JLabel jLabel27;
+    private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;

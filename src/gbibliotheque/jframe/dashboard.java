@@ -41,10 +41,13 @@ public class dashboard extends javax.swing.JFrame {
     public dashboard() {
         initComponents();
          initComponents();
+         setTitle("dashboard");
         Connect();
         showPieChart();
         Book_Load();
         Student_Load();
+        Tablelivre();
+        Tableadhereht();
         setIconImage();
         updateStatistics();
         JTextField G = login.Userc;

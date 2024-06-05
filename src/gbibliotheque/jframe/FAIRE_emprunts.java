@@ -43,6 +43,7 @@ public class FAIRE_emprunts extends javax.swing.JFrame {
      */
     public FAIRE_emprunts() {
         initComponents();
+        setTitle("page Faire emprunt");
         Connect();
         setIconImage();
         JTextField G = login.Userc;
@@ -282,7 +283,7 @@ public class FAIRE_emprunts extends javax.swing.JFrame {
 
         jPanel1.add(jPanel8, new org.netbeans.lib.awtextra.AbsoluteConstraints(890, 170, -1, 10));
 
-        jPanel9.setBackground(new java.awt.Color(0, 255, 204));
+        jPanel9.setBackground(new java.awt.Color(255, 0, 0));
         jPanel9.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         jPanel9.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
