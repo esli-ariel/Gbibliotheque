@@ -6,6 +6,8 @@ package gbibliotheque.jframe;
 
 import java.awt.Image;
 import java.awt.Toolkit;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -16,12 +18,15 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
+import javax.swing.Timer;
 import jframe.SignUpPage;
 
 /**
@@ -52,7 +57,24 @@ public class sign extends javax.swing.JFrame {
         setIconImage(Toolkit.getDefaultToolkit().getImage(getClass().getResource("Book.png")));
 
     }
-    
+    void showdate() {
+        Date d = new Date();
+        SimpleDateFormat s = new SimpleDateFormat("dd-MM-yyy");
+        datelabel.setText(s.format(d));
+    }
+
+    void showTime() {
+        new Timer(0, new ActionListener() { // pendant 0 secande fait moi une action qui s'appele 'ActionListener'
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                Date d = new Date();
+                SimpleDateFormat s = new SimpleDateFormat("hh:mm:ss a");
+                timelabel.setText(s.format(d));
+
+            }
+
+        }).start();
+    }
      // Database connectivity
     public void Connect() {
 
@@ -80,7 +102,7 @@ public class sign extends javax.swing.JFrame {
             
             
 
-            pst = con.prepareStatement("INSERT INTO `admin`(`nom_admin`, `prenom_admin`, `adresse`, `email`, `telephone`, `img_admin`, `password`) VALUES (?,?,?,?,?,?,?)");
+            pst = con.prepareStatement("INSERT INTO admin (nom_admin,prenom_admin,adresse,email,telephone,img_admin,password) VALUES (?,?,?,?,?,?,?)");
             pst.setString(1, Nom);
             pst.setString(2, Prenom);
             pst.setString(3, Adresse);
@@ -144,12 +166,12 @@ public class sign extends javax.swing.JFrame {
         }
         
         if (password.equals("")) {
-            JOptionPane.showMessageDialog(this, "please Enter your password");
+            JOptionPane.showMessageDialog(this, "S'il vous plait,entrez votre mot de passe");
             return false;
         }
 
         if (Email.equals("") || !Email.matches("^.+@.+\\..+$")) {
-            JOptionPane.showMessageDialog(this, "please Enter valid email address");
+            JOptionPane.showMessageDialog(this, "s'il vous plait entrez un email valide");
             return false;
         }
 

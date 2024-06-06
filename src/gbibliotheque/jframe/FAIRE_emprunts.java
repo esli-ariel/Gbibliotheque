@@ -44,6 +44,8 @@ public class FAIRE_emprunts extends javax.swing.JFrame {
     public FAIRE_emprunts() {
         initComponents();
         setTitle("page Faire emprunt");
+        getBookDetails();
+        getStudentDetails();
         Connect();
         setIconImage();
         JTextField G = login.Userc;
@@ -72,25 +74,15 @@ public class FAIRE_emprunts extends javax.swing.JFrame {
     FileInputStream fis = new FileInputStream(image);
             Class.forName("com.mysql.cj.jdbc.Driver");
             con = DriverManager.getConnection("jdbc:mysql://localhost:3306/bd_bibliothèque", "bib_admin", "2006");
-            pst = con.prepareStatement("select * from livres where code_liv=?");
+            pst = con.prepareStatement("select code_liv,titre_liv,auteur_liv,nb_exemplaires  from livres where code_liv=?");
             pst.setInt(1, code_liv);
             rs = pst.executeQuery();
-            if (rs.next()) {
+            while (rs.next()) {
                 IDLIVRE.setText(rs.getString("code_liv"));
                 TXTLIVRE.setText(rs.getString("titre_liv"));
                 AUTEUR.setText(rs.getString("auteur_liv"));
                 QUANTITE.setText(rs.getString("nb_exemplaires"));
-                //IMGLIVRE.setText(rs.getBlob("img_liv"));
-                pst.setBlob(WIDTH, fis);
-                txt_bookerror.setText("");
-
-            } else {
-                txt_bookerror.setText("ID livre non trouvé");
-                IDLIVRE.setText("");
-                TXTLIVRE.setText("");
-                AUTEUR.setText("");
-                QUANTITE.setText("");
-
+        
             }
 
         } catch (Exception e) {
@@ -114,14 +106,7 @@ public class FAIRE_emprunts extends javax.swing.JFrame {
                 nomadherent.setText(rs.getString("nom_user"));
                 prenomadherent.setText(rs.getString("prenom_user"));
                 lbl_studentid.setText(rs.getString("telephone"));
-                txterrorstudent.setText("");
-
-            } else {
-                txterrorstudent.setText("ID adherent non trouvé");
-                idadherent.setText("");
-                nomadherent.setText("");
-                prenomadherent.setText("");
-                lbl_studentid.setText("");
+                
             }
 
         } catch (Exception e) {
@@ -129,21 +114,36 @@ public class FAIRE_emprunts extends javax.swing.JFrame {
 
         }
     }
-
-    /*public void loadimg(){
+    
+    
+    public void loadimgs(){
         try{
             byte imageData[] =rs.getBytes("img_liv");
                 
                 format = new ImageIcon(imageData);
                 Image mm =format.getImage();
                 Image img2 =mm.getScaledInstance(135, 127, Image.SCALE_DEFAULT);
-                image1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+                IMGLIVRE.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
                 ImageIcon image =new ImageIcon(img2);
-                image1.setIcon(image);
+                IMGLIVRE.setIcon(image);
     }catch(Exception e){
         
     }
-    }*/
+    }
+    public void loadimg(){
+        try{
+            byte imageData[] =rs.getBytes("img_user");
+                
+                format = new ImageIcon(imageData);
+                Image mm =format.getImage();
+                Image img2 =mm.getScaledInstance(135, 127, Image.SCALE_DEFAULT);
+                imgadherent.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+                ImageIcon image =new ImageIcon(img2);
+                imgadherent.setIcon(image);
+    }catch(Exception e){
+        
+    }
+    }
         // Update book count to the database table
     public void updateBookCount() {
         try {
@@ -179,7 +179,7 @@ public class FAIRE_emprunts extends javax.swing.JFrame {
             pst = con.prepareStatement(sql);
             pst.setInt(1, bookId);
             pst.setInt(2, studentId);
-            pst.setString(3, "pending");
+            pst.setString(3, "emprunté");
 
             rs = pst.executeQuery();
             if (rs.next()) {
@@ -794,7 +794,7 @@ public class FAIRE_emprunts extends javax.swing.JFrame {
                     String issuedate = df.format(dateemprunt.getDatoFecha());
                     String duedate = df.format(dateretour.getDatoFecha());
 
-                    pst = con.prepareStatement("insert into emprunts(`emprunteurs`, `nom_adhe`, `livre_empruntés`, `titre_liv`, `date_emprumts`, `retour_norm`, `status`)values(?,?,?,?,?,?,?,?)");
+                    pst = con.prepareStatement("insert into emprunts(emprunteurs,nom_adhe,livre_empruntés,titre_liv,date_emprumts,retour_norm,status)values(?,?,?,?,?,?,?)");
                     
                     pst.setInt(1, studentId);
                     pst.setString(2, studentName);
@@ -802,7 +802,7 @@ public class FAIRE_emprunts extends javax.swing.JFrame {
                     pst.setString(4, bookName);
                     pst.setString(5, issuedate);
                     pst.setString(6, duedate);
-                    pst.setString(7, "pending");
+                    pst.setString(7, "emprunté");
 
                     pst.executeUpdate();
                     JOptionPane.showMessageDialog(this, "Emprunts enregistrer ...");

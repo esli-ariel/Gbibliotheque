@@ -17,6 +17,7 @@ import java.util.Vector;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 import javax.swing.table.DefaultTableModel;
 import org.jfree.chart.ChartFactory;
@@ -40,14 +41,13 @@ public class dashboard extends javax.swing.JFrame {
      */
     public dashboard() {
         initComponents();
-         initComponents();
-         setTitle("dashboard");
+         setTitle("Tableau De Bord");
         Connect();
         showPieChart();
-        Book_Load();
+        
         Student_Load();
         Tablelivre();
-        Tableadhereht();
+        Tableadherents();
         setIconImage();
         updateStatistics();
         JTextField G = login.Userc;
@@ -78,7 +78,7 @@ public class dashboard extends javax.swing.JFrame {
                 d.addRow(v2);
             }
         } catch (SQLException ex) {
-            Logger.getLogger(Glivres.class.getName()).log(Level.SEVERE, null, ex);
+           
         }
     }
       // Loading student details from the database table
@@ -154,36 +154,70 @@ public class dashboard extends javax.swing.JFrame {
     }
    
     private int getNombreUser() {
-        return getCountFromDatabase("SELECT COUNT(*) FROM utilisateur ");
+        return getCountFromDatabase("SELECT COUNT(*) FROM adherents ");
     }
     private int getEmprunts() {
         return getCountFromDatabase("SELECT COUNT(*) FROM  emprunts ");
     }
     private int getNombreRetour() {
-        return getCountFromDatabase("SELECT COUNT(*) FROM emprunts where status=retourné ");
+        return getCountFromDatabase("SELECT COUNT(*) FROM emprunts where status=?");
+        
     }
       private int getNombrepasRetour() {
-        return getCountFromDatabase("SELECT COUNT(*) FROM emprunts where status=pending ");
+        return getCountFromDatabase("SELECT COUNT(*) FROM emprunts where status=?");
+        
     }
     
      public void updateStatistics() {
+         int count=countEmpruntsretour();
+         if (count != -1) {
+            retour.setText(Integer.toString(count));
+            } else {
+    // Handle the error, maybe show a message to the user
+        }
+         int count1=countEmpruntspasretour();
+            if (count1 != -1) {
+          pasretournés.setText(Integer.toString(count1));
+            } else {
+    // Handle the error, maybe show a message to the user
+        }
         int nombreUser = getNombreUser();
         int nombreDeLivres = getLivres();
         int nombreEmprunts = getEmprunts();
-        int nombreRetour = getNombreRetour();
-        int nombrepasRetour = getNombrepasRetour();
+        //int nombreRetour = countEmpruntsretour();
+        int nombrepasRetour = countEmpruntspasretour();
 
         jllivres.setText( ": "+nombreDeLivres);
         juser.setText( ": "+nombreUser);
         jLempruntés.setText( ": "+nombreEmprunts);
-        retour.setText( ": "+nombreRetour);
-        pasretournés.setText(":"+nombrepasRetour);
         
+        //pasretournés.setText(":"+nombrepasRetour);
         
+        showPieChart(nombreUser, nombreDeLivres );
+    }
+     
+      public void showPieChart(int nombreUser, int nombreDeLivres) {
+        DefaultPieDataset pieDataset = new DefaultPieDataset();
+        pieDataset.setValue("Utilisateurs", nombreUser);
+        pieDataset.setValue("Livres", nombreDeLivres);
+       
+
+        JFreeChart pieChart = ChartFactory.createPieChart("Statistiques", pieDataset, false, true, false);
+        PiePlot piePlot = (PiePlot) pieChart.getPlot();
+
+        piePlot.setSectionPaint("Utilisateurs", new Color(255, 255, 102));
+        piePlot.setSectionPaint("Livres", new Color(102, 255, 102));
+       
+
+        piePlot.setBackgroundPaint(Color.white);
+
+        ChartPanel chartPanel = new ChartPanel(pieChart);
+        panelPieChart1.removeAll();
+        panelPieChart1.add(chartPanel, BorderLayout.CENTER);
+        panelPieChart1.validate();
     }
      // Counting No.of.Issued books from the database table
-    public void countEmpruntsretour() {
-
+    public int countEmpruntsretour() {
         int noOfIssuedBooksCount = 0;
         try {
             pst = con.prepareStatement("select * from emprunts where status=?");
@@ -193,11 +227,33 @@ public class dashboard extends javax.swing.JFrame {
                 noOfIssuedBooksCount++;
 
             }
-            retour.setText(Integer.toString(noOfIssuedBooksCount));
+            //retour.setText(Integer.toString(noOfIssuedBooksCount));
+            return  noOfIssuedBooksCount ;
 
         } catch (Exception e) {
             e.printStackTrace();
         }
+        return -1;
+
+    }
+    
+    public int countEmpruntspasretour() {
+        int noIssuedBooksCount = 0;
+        try {
+            pst = con.prepareStatement("select * from emprunts where status=?");
+            pst.setString(1, "emprunté");
+            rs = pst.executeQuery();
+            while (rs.next()) {
+                noIssuedBooksCount++;
+
+            }
+            //retour.setText(Integer.toString(noOfIssuedBooksCount));
+            return  noIssuedBooksCount ;
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return -1;
 
     }
     
@@ -207,10 +263,10 @@ public class dashboard extends javax.swing.JFrame {
         DefaultPieDataset barDataset = new DefaultPieDataset();
 
         try {
-            pst = con.prepareStatement("select titre_liv, count(*) as issue_count from emprunts group by titre_liv");
+            pst = con.prepareStatement("select status, count(*) as issue_count from emprunts group by status");
             rs = pst.executeQuery();
             while (rs.next()) {
-                barDataset.setValue(rs.getString("titre_liv"), new Double(rs.getDouble("issue_count")));
+                barDataset.setValue(rs.getString("status"), new Double(rs.getDouble("issue_count")));
 
             }
 
@@ -219,7 +275,7 @@ public class dashboard extends javax.swing.JFrame {
         }
 
         //create chart
-        JFreeChart piechart = ChartFactory.createPieChart("Statistiques", barDataset, true, true, false);//explain
+        JFreeChart piechart = ChartFactory.createPieChart("Statistiques emprunts", barDataset, true, true, false);//explain
 
         PiePlot piePlot = (PiePlot) piechart.getPlot();
 
@@ -227,9 +283,9 @@ public class dashboard extends javax.swing.JFrame {
 
         //create chartPanel to display chart(graph)
         ChartPanel barChartPanel = new ChartPanel(piechart);
-        panelpiechart.removeAll();
-        panelpiechart.add(barChartPanel, BorderLayout.CENTER);
-        panelpiechart.validate();
+        panelPieChart.removeAll();
+        panelPieChart.add(barChartPanel, BorderLayout.CENTER);
+        panelPieChart.validate();
     }
     
     /**
@@ -265,13 +321,17 @@ public class dashboard extends javax.swing.JFrame {
         jLabel21 = new javax.swing.JLabel();
         jPanel10 = new javax.swing.JPanel();
         jPanel12 = new javax.swing.JPanel();
+        jusers = new javax.swing.JLabel();
         juser = new javax.swing.JLabel();
-        panelpiechart = new javax.swing.JPanel();
+        panelPieChart1 = new javax.swing.JPanel();
         jPanel14 = new javax.swing.JPanel();
+        jllivre = new javax.swing.JLabel();
         jllivres = new javax.swing.JLabel();
         p = new javax.swing.JPanel();
+        pasretourné = new javax.swing.JLabel();
         pasretournés = new javax.swing.JLabel();
         jPanel16 = new javax.swing.JPanel();
+        jLemprunté = new javax.swing.JLabel();
         jLempruntés = new javax.swing.JLabel();
         jLabel10 = new javax.swing.JLabel();
         lbllivre = new javax.swing.JLabel();
@@ -279,11 +339,13 @@ public class dashboard extends javax.swing.JFrame {
         jLabel17 = new javax.swing.JLabel();
         jLabel18 = new javax.swing.JLabel();
         jPanel17 = new javax.swing.JPanel();
+        retours = new javax.swing.JLabel();
         retour = new javax.swing.JLabel();
         jPanel18 = new javax.swing.JPanel();
         jLabel20 = new javax.swing.JLabel();
         jScrollPane1 = new javax.swing.JScrollPane();
         jTablelivre = new javax.swing.JTable();
+        panelPieChart = new javax.swing.JPanel();
         jScrollPane2 = new javax.swing.JScrollPane();
         jTableadherent = new javax.swing.JTable();
 
@@ -305,12 +367,14 @@ public class dashboard extends javax.swing.JFrame {
         jLabel2.setText("Bienvenue :");
         jPanel1.add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(870, 0, 138, -1));
 
-        welcome.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
-        welcome.setForeground(new java.awt.Color(255, 0, 51));
-        jPanel1.add(welcome, new org.netbeans.lib.awtextra.AbsoluteConstraints(1000, 0, 180, 44));
+        welcome.setFont(new java.awt.Font("Segoe UI", 1, 24)); // NOI18N
+        welcome.setForeground(new java.awt.Color(255, 255, 255));
+        jPanel1.add(welcome, new org.netbeans.lib.awtextra.AbsoluteConstraints(1010, 0, 180, 44));
 
+        jLabel3.setBackground(new java.awt.Color(255, 0, 0));
         jLabel3.setFont(new java.awt.Font("Segoe UI", 1, 48)); // NOI18N
-        jLabel3.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel3.setForeground(new java.awt.Color(255, 0, 0));
+        jLabel3.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel3.setText("X");
         jLabel3.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
@@ -540,41 +604,57 @@ public class dashboard extends javax.swing.JFrame {
 
         jPanel12.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
-        juser.setFont(new java.awt.Font("Segoe UI", 1, 24)); // NOI18N
+        jusers.setFont(new java.awt.Font("Segoe UI", 1, 24)); // NOI18N
+        jusers.setForeground(new java.awt.Color(0, 255, 204));
+        jusers.setIcon(new javax.swing.ImageIcon(getClass().getResource("/gbibliotheque/icons/icons8_Account_50px.png"))); // NOI18N
+        jPanel12.add(jusers, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 10, 50, -1));
+
+        juser.setFont(new java.awt.Font("Segoe UI", 1, 36)); // NOI18N
         juser.setForeground(new java.awt.Color(0, 255, 204));
-        juser.setIcon(new javax.swing.ImageIcon(getClass().getResource("/gbibliotheque/icons/icons8_Account_50px.png"))); // NOI18N
-        jPanel12.add(juser, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 10, 100, -1));
+        jPanel12.add(juser, new org.netbeans.lib.awtextra.AbsoluteConstraints(43, 0, 80, 70));
 
         jPanel10.add(jPanel12, new org.netbeans.lib.awtextra.AbsoluteConstraints(750, 30, 125, 76));
 
-        panelpiechart.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
-        panelpiechart.setLayout(new java.awt.BorderLayout());
-        jPanel10.add(panelpiechart, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 200, 420, 360));
+        panelPieChart1.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
+        panelPieChart1.setLayout(new javax.swing.BoxLayout(panelPieChart1, javax.swing.BoxLayout.LINE_AXIS));
+        jPanel10.add(panelPieChart1, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 300, 420, 300));
 
         jPanel14.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
-        jllivres.setFont(new java.awt.Font("Segoe UI", 1, 24)); // NOI18N
+        jllivre.setFont(new java.awt.Font("Segoe UI", 1, 24)); // NOI18N
+        jllivre.setForeground(new java.awt.Color(0, 255, 204));
+        jllivre.setIcon(new javax.swing.ImageIcon(getClass().getResource("/gbibliotheque/adminIcons/icons8_Book_Shelf_50px.png"))); // NOI18N
+        jPanel14.add(jllivre, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 10, 50, -1));
+
+        jllivres.setFont(new java.awt.Font("Segoe UI", 1, 36)); // NOI18N
         jllivres.setForeground(new java.awt.Color(0, 255, 204));
-        jllivres.setIcon(new javax.swing.ImageIcon(getClass().getResource("/gbibliotheque/adminIcons/icons8_Book_Shelf_50px.png"))); // NOI18N
-        jPanel14.add(jllivres, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 10, 100, -1));
+        jPanel14.add(jllivres, new org.netbeans.lib.awtextra.AbsoluteConstraints(43, 0, 80, 70));
 
         jPanel10.add(jPanel14, new org.netbeans.lib.awtextra.AbsoluteConstraints(61, 34, 125, 76));
 
         p.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
-        pasretournés.setFont(new java.awt.Font("Segoe UI", 1, 24)); // NOI18N
+        pasretourné.setFont(new java.awt.Font("Segoe UI", 1, 24)); // NOI18N
+        pasretourné.setForeground(new java.awt.Color(0, 255, 204));
+        pasretourné.setIcon(new javax.swing.ImageIcon(getClass().getResource("/gbibliotheque/adminIcons/icons8_Book_Shelf_50px.png"))); // NOI18N
+        p.add(pasretourné, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 10, -1, -1));
+
+        pasretournés.setFont(new java.awt.Font("Segoe UI", 1, 36)); // NOI18N
         pasretournés.setForeground(new java.awt.Color(0, 255, 204));
-        pasretournés.setIcon(new javax.swing.ImageIcon(getClass().getResource("/gbibliotheque/adminIcons/icons8_Book_Shelf_50px.png"))); // NOI18N
-        p.add(pasretournés, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 10, 100, -1));
+        p.add(pasretournés, new org.netbeans.lib.awtextra.AbsoluteConstraints(43, 0, 80, 70));
 
         jPanel10.add(p, new org.netbeans.lib.awtextra.AbsoluteConstraints(230, 30, 125, 76));
 
         jPanel16.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
-        jLempruntés.setFont(new java.awt.Font("Segoe UI", 1, 24)); // NOI18N
+        jLemprunté.setFont(new java.awt.Font("Segoe UI", 1, 24)); // NOI18N
+        jLemprunté.setForeground(new java.awt.Color(0, 255, 204));
+        jLemprunté.setIcon(new javax.swing.ImageIcon(getClass().getResource("/gbibliotheque/adminIcons/icons8_Sell_50px.png"))); // NOI18N
+        jPanel16.add(jLemprunté, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 10, 50, -1));
+
+        jLempruntés.setFont(new java.awt.Font("Segoe UI", 1, 36)); // NOI18N
         jLempruntés.setForeground(new java.awt.Color(0, 255, 204));
-        jLempruntés.setIcon(new javax.swing.ImageIcon(getClass().getResource("/gbibliotheque/adminIcons/icons8_Sell_50px.png"))); // NOI18N
-        jPanel16.add(jLempruntés, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 10, 100, -1));
+        jPanel16.add(jLempruntés, new org.netbeans.lib.awtextra.AbsoluteConstraints(43, 0, 80, 70));
 
         jPanel10.add(jPanel16, new org.netbeans.lib.awtextra.AbsoluteConstraints(410, 30, 125, 76));
 
@@ -600,10 +680,14 @@ public class dashboard extends javax.swing.JFrame {
 
         jPanel17.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
-        retour.setFont(new java.awt.Font("Segoe UI", 1, 24)); // NOI18N
+        retours.setFont(new java.awt.Font("Segoe UI", 1, 24)); // NOI18N
+        retours.setForeground(new java.awt.Color(0, 255, 204));
+        retours.setIcon(new javax.swing.ImageIcon(getClass().getResource("/gbibliotheque/adminIcons/icons8_List_of_Thumbnails_50px.png"))); // NOI18N
+        jPanel17.add(retours, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 10, 50, -1));
+
+        retour.setFont(new java.awt.Font("Segoe UI", 1, 36)); // NOI18N
         retour.setForeground(new java.awt.Color(0, 255, 204));
-        retour.setIcon(new javax.swing.ImageIcon(getClass().getResource("/gbibliotheque/adminIcons/icons8_List_of_Thumbnails_50px.png"))); // NOI18N
-        jPanel17.add(retour, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 10, 100, -1));
+        jPanel17.add(retour, new org.netbeans.lib.awtextra.AbsoluteConstraints(43, 0, 80, 70));
 
         jPanel10.add(jPanel17, new org.netbeans.lib.awtextra.AbsoluteConstraints(580, 30, 125, 76));
 
@@ -642,7 +726,11 @@ public class dashboard extends javax.swing.JFrame {
         ));
         jScrollPane1.setViewportView(jTablelivre);
 
-        jPanel10.add(jScrollPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(510, 150, -1, 230));
+        jPanel10.add(jScrollPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(500, 120, -1, 140));
+
+        panelPieChart.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
+        panelPieChart.setLayout(new java.awt.CardLayout());
+        jPanel10.add(panelPieChart, new org.netbeans.lib.awtextra.AbsoluteConstraints(490, 300, 440, 300));
 
         jTableadherent.setBorder(javax.swing.BorderFactory.createEtchedBorder(new java.awt.Color(0, 255, 204), new java.awt.Color(0, 255, 204)));
         jTableadherent.setModel(new javax.swing.table.DefaultTableModel(
@@ -668,7 +756,7 @@ public class dashboard extends javax.swing.JFrame {
         ));
         jScrollPane2.setViewportView(jTableadherent);
 
-        jPanel10.add(jScrollPane2, new org.netbeans.lib.awtextra.AbsoluteConstraints(510, 420, -1, 220));
+        jPanel10.add(jScrollPane2, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 120, 420, 140));
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -688,10 +776,8 @@ public class dashboard extends javax.swing.JFrame {
             .addGroup(layout.createSequentialGroup()
                 .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(jPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, 690, Short.MAX_VALUE)
-                        .addContainerGap())
-                    .addComponent(jPanel10, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                    .addComponent(jPanel10, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, 676, javax.swing.GroupLayout.PREFERRED_SIZE)))
         );
 
         pack();
@@ -735,7 +821,7 @@ public class dashboard extends javax.swing.JFrame {
 
     private void jLabel9MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel9MouseClicked
         // TODO add your handling code here:
-        FAIRE_emprunts ed = new FAIRE_emprunts();
+        emprunts ed = new emprunts();
         ed.setVisible(true);
         ed.pack();
         ed.setLocationRelativeTo(null);
@@ -840,6 +926,7 @@ public class dashboard extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel7;
     private javax.swing.JLabel jLabel8;
     private javax.swing.JLabel jLabel9;
+    private javax.swing.JLabel jLemprunté;
     private javax.swing.JLabel jLempruntés;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel10;
@@ -861,13 +948,74 @@ public class dashboard extends javax.swing.JFrame {
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JTable jTableadherent;
     private javax.swing.JTable jTablelivre;
+    private javax.swing.JLabel jllivre;
     private javax.swing.JLabel jllivres;
     private javax.swing.JLabel juser;
+    private javax.swing.JLabel jusers;
     private javax.swing.JLabel lbllivre;
     private javax.swing.JPanel p;
-    private javax.swing.JPanel panelpiechart;
+    private javax.swing.JPanel panelPieChart;
+    private javax.swing.JPanel panelPieChart1;
+    private javax.swing.JLabel pasretourné;
     private javax.swing.JLabel pasretournés;
     private javax.swing.JLabel retour;
+    private javax.swing.JLabel retours;
     public static javax.swing.JLabel welcome;
     // End of variables declaration//GEN-END:variables
+
+ public void Tablelivre(){
+    
+        String []livres ={"Code","titre_liv","auteur_liv","nb_exemplaires"};
+    
+        DefaultTableModel model = new DefaultTableModel(null,livres);
+        String sql ="select * from livres";
+        try {
+            
+            con = (Connection) DriverManager.getConnection("jdbc:mysql://localhost/bd_bibliothèque", "bib_admin", "2006");
+            pst  = con.prepareStatement(sql);
+            rs = pst.executeQuery(sql);
+            while(rs.next()){
+                 Object o[]={
+                    rs.getString("code_liv"),
+                    rs.getString("titre_liv"),
+                    rs.getString("auteur_liv"),
+                    rs.getString("nb_exemplaires")
+                    };
+                 model.addRow(o);
+            }
+            jTablelivre.setModel(model);
+            con.close();
+        }catch(SQLException ex){
+          Logger.getLogger(Glivres.class.getName()).log(Level.SEVERE, null, ex);
+        }   
+    }
+
+ public void Tableadherents(){
+    
+        String []user ={"matricule_user", "nom_user", "prenom_user", "telephone"};
+    
+        DefaultTableModel model = new DefaultTableModel(null,user);
+        String sql ="select * from adherents";
+        try {
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            con = (Connection) DriverManager.getConnection("jdbc:mysql://localhost/bd_bibliothèque", "bib_admin", "2006");
+            pst  = con.prepareStatement(sql);
+            rs = pst.executeQuery(sql);
+            while(rs.next()){
+                 Object o[]={
+                    rs.getString("matricule_user"),
+                    rs.getString("nom_user"),
+                    rs.getString("prenom_user"),
+                    rs.getString("telephone"),
+                    
+                    };
+                 model.addRow(o);
+            }
+            jTableadherent.setModel(model);
+            con.close();
+        }catch(Exception e){
+         JOptionPane.showMessageDialog(null, "erreur " +e.getMessage());
+            e.printStackTrace();
+        }   
+    }
 }
