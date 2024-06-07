@@ -42,13 +42,19 @@ public class emprunts extends javax.swing.JFrame {
         setTitle("Details emprunts");
         Connect();
         setIconImage();
-        
+         showdate();
         Tableemprunts();
+         emprunts();
         JTextField G = login.Userc;
         welcome.setText(G.getText());
         
     }
-    
+    void showdate() {
+        Date d = new Date();
+        SimpleDateFormat s = new SimpleDateFormat("dd-MM-yyy");
+        date_fromdate.setDate(d);
+        date_todate.setDate(d);
+    }
     public void Connect() {
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
@@ -67,14 +73,17 @@ public class emprunts extends javax.swing.JFrame {
     }
     
      public void Tableemprunts(){
+        
          
          SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
         String fromDate = df.format(date_fromdate.getDate());
         String toDate = df.format(date_todate.getDate());
+       
+
         String []user ={"Num_emp","emprunteurs","nom_adhe","livre_empruntés","titre_liv","date_emprumts","retour_norm","status"};
     
         DefaultTableModel model = new DefaultTableModel(null,user);
-        String sql =("select * from emprunts where retour_norm<? and status=?");
+        String sql =("select * from emprunts where retour_norm<? AND status=?");
          
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
@@ -152,6 +161,42 @@ public class emprunts extends javax.swing.JFrame {
             e.printStackTrace();
         }   
     }
+    public void emprunts(){
+        
+         
+         
+       
+
+        String []user ={"Num_emp","emprunteurs","nom_adhe","livre_empruntés","titre_liv","date_emprumts","retour_norm","status"};
+    
+        DefaultTableModel model = new DefaultTableModel(null,user);
+        String sql =("select * from emprunts ");
+         
+        try {
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            con = (Connection) DriverManager.getConnection("jdbc:mysql://localhost/bd_bibliothèque", "bib_admin", "2006");
+            pst  = con.prepareStatement(sql);
+            rs = pst.executeQuery(sql);
+            while(rs.next()){
+                 Object o[]={
+                     rs.getString("Num_emp"),
+                    rs.getString("emprunteurs"),
+                    rs.getString("nom_adhe"),
+                    rs.getString("livre_empruntés"),
+                    rs.getString("titre_liv"),
+                    rs.getString("date_emprumts"),
+                    rs.getString("retour_norm"),
+                    rs.getString("status"),
+                    };
+                    model.addRow(o);
+            }
+            jTable2.setModel(model);
+            con.close();
+        }catch(Exception e){
+         JOptionPane.showMessageDialog(null, "erreur " +e.getMessage());
+            e.printStackTrace();
+        }  
+    }
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -175,6 +220,7 @@ public class emprunts extends javax.swing.JFrame {
         date_todate = new com.toedter.calendar.JDateChooser();
         search_button = new rojerusan.RSMaterialButtonRectangle();
         jLabel1 = new javax.swing.JLabel();
+        afficher = new rojerusan.RSMaterialButtonRectangle();
         jScrollPane1 = new javax.swing.JScrollPane();
         jTable2 = new rojeru_san.complementos.RSTableMetro();
 
@@ -291,6 +337,19 @@ public class emprunts extends javax.swing.JFrame {
         jLabel1.setForeground(new java.awt.Color(0, 102, 102));
         jLabel1.setText("jLabel1");
 
+        afficher.setBackground(new java.awt.Color(0, 255, 204));
+        afficher.setText("TOUT AFFICHER");
+        afficher.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                afficherMouseClicked(evt);
+            }
+        });
+        afficher.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                afficherActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
         jPanel3.setLayout(jPanel3Layout);
         jPanel3Layout.setHorizontalGroup(
@@ -325,8 +384,10 @@ public class emprunts extends javax.swing.JFrame {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(date_todate, javax.swing.GroupLayout.PREFERRED_SIZE, 183, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(35, 35, 35)
-                        .addComponent(search_button, javax.swing.GroupLayout.PREFERRED_SIZE, 110, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap(238, Short.MAX_VALUE))
+                        .addComponent(search_button, javax.swing.GroupLayout.PREFERRED_SIZE, 110, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(33, 33, 33)
+                        .addComponent(afficher, javax.swing.GroupLayout.PREFERRED_SIZE, 139, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addContainerGap(66, Short.MAX_VALUE))
         );
         jPanel3Layout.setVerticalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -352,7 +413,9 @@ public class emprunts extends javax.swing.JFrame {
                         .addComponent(date_fromdate, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addComponent(date_todate, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addComponent(jLabel2))
-                    .addComponent(search_button, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(search_button, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(afficher, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addGap(13, 13, 13))
         );
 
@@ -413,8 +476,13 @@ public class emprunts extends javax.swing.JFrame {
 
     private void search_buttonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_search_buttonActionPerformed
         // TODO add your handling code here:
-        clearTable();
+        if(date_fromdate.getDate() != null && date_todate.getDate() != null){
+             clearTable();
         search();
+        }else{
+            JOptionPane.showMessageDialog(this, "s'il vous plait selectionner une date");
+        }
+       
       
     }//GEN-LAST:event_search_buttonActionPerformed
 
@@ -429,6 +497,16 @@ public class emprunts extends javax.swing.JFrame {
         t.setVisible(true);
         this.dispose();
     }//GEN-LAST:event_jLabel3MouseClicked
+
+    private void afficherActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_afficherActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_afficherActionPerformed
+
+    private void afficherMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_afficherMouseClicked
+        // TODO add your handling code here:
+        clearTable();
+        Tableemprunts();
+    }//GEN-LAST:event_afficherMouseClicked
 
     /**
      * @param args the command line arguments
@@ -467,6 +545,7 @@ public class emprunts extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private rojerusan.RSMaterialButtonRectangle afficher;
     private com.toedter.calendar.JDateChooser date_fromdate;
     private com.toedter.calendar.JDateChooser date_todate;
     private javax.swing.JLabel jLabel1;
