@@ -169,7 +169,7 @@ public class dashboard extends javax.swing.JFrame {
     }
     
      public void updateStatistics() {
-         int count=countEmpruntsretour();
+         /*int count=countEmpruntsretour();
          if (count != -1) {
             retour.setText(Integer.toString(count));
             } else {
@@ -180,7 +180,7 @@ public class dashboard extends javax.swing.JFrame {
           pasretournés.setText(Integer.toString(count1));
             } else {
     // Handle the error, maybe show a message to the user
-        }
+        }*/
         int nombreUser = getNombreUser();
         int nombreDeLivres = getLivres();
         int nombreEmprunts = getEmprunts();
@@ -217,7 +217,7 @@ public class dashboard extends javax.swing.JFrame {
         panelPieChart1.validate();
     }
      // Counting No.of.Issued books from the database table
-    public int countEmpruntsretour() {
+    /*public int countEmpruntsretour() {
         int noOfIssuedBooksCount = 0;
         try {
             pst = con.prepareStatement("select * from emprunts where status=?");
@@ -233,9 +233,9 @@ public class dashboard extends javax.swing.JFrame {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return -1;
+        
 
-    }
+    }*/
     
     public int countEmpruntspasretour() {
         int noIssuedBooksCount = 0;

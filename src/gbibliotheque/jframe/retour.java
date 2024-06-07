@@ -71,6 +71,7 @@ public class retour extends javax.swing.JFrame {
         int studentId = Integer.parseInt(txt_studentid.getText());
 
         try {
+            boolean success;
             Class.forName("com.mysql.cj.jdbc.Driver");
             con = DriverManager.getConnection("jdbc:mysql://localhost:3306/bd_bibliothèque", "bib_admin", "2006");
             pst = con.prepareStatement("select * from emprunts where livre_empruntés=? and emprunteurs=? and status=?");
@@ -78,7 +79,8 @@ public class retour extends javax.swing.JFrame {
             pst.setInt(2, studentId);
             pst.setString(3, "emprunté");
             rs = pst.executeQuery();
-            while(rs.next()) {
+            if(rs.next()) {
+                success =true;
                 lbl_issueid.setText(rs.getString("Num_emp"));
                 lbl_bookid.setText(rs.getString("livre_empruntés"));
                 lbl_bookname.setText(rs.getString("titre_liv"));
@@ -88,6 +90,9 @@ public class retour extends javax.swing.JFrame {
                 lbl_duedate.setText(rs.getString("retour_norm"));
                 txtbookerror.setText("");
 
+            }else{
+                 txtbookerror.setText("Livre non trouvé");
+                 success=false;
             }
 
         } catch (Exception e) {
@@ -496,6 +501,7 @@ public class retour extends javax.swing.JFrame {
 
     private void txt_bookidFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_txt_bookidFocusLost
         // TODO add your handling code here:
+        getIssueBookDetails();
     }//GEN-LAST:event_txt_bookidFocusLost
 
     private void txt_studentidFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_txt_studentidFocusLost

@@ -23,7 +23,12 @@ SET time_zone = "+00:00";
 
 -- --------------------------------------------------------
 
---
+CREATE USER 'bib_admin'@'%' IDENTIFIED BY '2006';
+GRANT ALL PRIVILEGES ON bd_bibliothèque.* TO 'bib_admin'@'%';
+FLUSH PRIVILEGES;
+
+
+
 -- Structure de la table `adherents`
 --
 

@@ -44,8 +44,7 @@ public class FAIRE_emprunts extends javax.swing.JFrame {
     public FAIRE_emprunts() {
         initComponents();
         setTitle("page Faire emprunt");
-        getBookDetails();
-        getStudentDetails();
+        
         Connect();
         setIconImage();
         JTextField G = login.Userc;
@@ -70,19 +69,20 @@ public class FAIRE_emprunts extends javax.swing.JFrame {
         int code_liv= Integer.parseInt(txt_bookid.getText());
 
         try {
-            File image = new File(path);
-    FileInputStream fis = new FileInputStream(image);
             Class.forName("com.mysql.cj.jdbc.Driver");
             con = DriverManager.getConnection("jdbc:mysql://localhost:3306/bd_bibliothèque", "bib_admin", "2006");
-            pst = con.prepareStatement("select code_liv,titre_liv,auteur_liv,nb_exemplaires  from livres where code_liv=?");
+            pst = con.prepareStatement("select * from livres where code_liv=?");
             pst.setInt(1, code_liv);
             rs = pst.executeQuery();
-            while (rs.next()) {
+            if(rs.next()) {
                 IDLIVRE.setText(rs.getString("code_liv"));
                 TXTLIVRE.setText(rs.getString("titre_liv"));
                 AUTEUR.setText(rs.getString("auteur_liv"));
                 QUANTITE.setText(rs.getString("nb_exemplaires"));
+                txterrorbook.setText("");
         
+            }else{
+                txterrorbook.setText("livre non trouvé");
             }
 
         } catch (Exception e) {
@@ -106,7 +106,10 @@ public class FAIRE_emprunts extends javax.swing.JFrame {
                 nomadherent.setText(rs.getString("nom_user"));
                 prenomadherent.setText(rs.getString("prenom_user"));
                 lbl_studentid.setText(rs.getString("telephone"));
+                txterrorstudent.setText("");
                 
+            }else{
+                txterrorstudent.setText("adherent non trouvé");
             }
 
         } catch (Exception e) {
@@ -232,6 +235,7 @@ public class FAIRE_emprunts extends javax.swing.JFrame {
         jLabel18 = new javax.swing.JLabel();
         jLabel15 = new javax.swing.JLabel();
         IMGLIVRE = new javax.swing.JLabel();
+        txterrorbook = new javax.swing.JLabel();
         jPanel2 = new javax.swing.JPanel();
         jLabel2 = new javax.swing.JLabel();
         jPanel5 = new javax.swing.JPanel();
@@ -388,7 +392,7 @@ public class FAIRE_emprunts extends javax.swing.JFrame {
         jLabel3.setForeground(new java.awt.Color(255, 255, 255));
         jLabel3.setIcon(new javax.swing.ImageIcon(getClass().getResource("/gbibliotheque/AddNewBookIcons/icons8_Literature_100px_1.png"))); // NOI18N
         jLabel3.setText("Livre");
-        jPanel3.add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(80, 40, -1, -1));
+        jPanel3.add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(120, 20, -1, -1));
 
         jPanel6.setBackground(new java.awt.Color(255, 255, 255));
 
@@ -474,6 +478,10 @@ public class FAIRE_emprunts extends javax.swing.JFrame {
             }
         });
         jPanel3.add(IMGLIVRE, new org.netbeans.lib.awtextra.AbsoluteConstraints(180, 370, 148, 178));
+
+        txterrorbook.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
+        txterrorbook.setForeground(new java.awt.Color(255, 0, 51));
+        jPanel3.add(txterrorbook, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 500, 140, 30));
 
         jPanel1.add(jPanel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(-30, 110, 420, 550));
 
@@ -569,10 +577,11 @@ public class FAIRE_emprunts extends javax.swing.JFrame {
                 imgadherentMouseClicked(evt);
             }
         });
-        jPanel2.add(imgadherent, new org.netbeans.lib.awtextra.AbsoluteConstraints(150, 370, 148, 178));
+        jPanel2.add(imgadherent, new org.netbeans.lib.awtextra.AbsoluteConstraints(250, 370, 148, 178));
 
-        txterrorstudent.setText("jLabel4");
-        jPanel2.add(txterrorstudent, new org.netbeans.lib.awtextra.AbsoluteConstraints(170, 120, 100, -1));
+        txterrorstudent.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
+        txterrorstudent.setForeground(new java.awt.Color(255, 0, 51));
+        jPanel2.add(txterrorstudent, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 486, 150, 30));
 
         jPanel1.add(jPanel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(390, 110, 420, 550));
 
@@ -949,6 +958,7 @@ public class FAIRE_emprunts extends javax.swing.JFrame {
     private javax.swing.JLabel txt_bookerror1;
     private app.bolivia.swing.JCTextField txt_bookid;
     private app.bolivia.swing.JCTextField txt_studentid;
+    private javax.swing.JLabel txterrorbook;
     private javax.swing.JLabel txterrorstudent;
     private javax.swing.JLabel welcome;
     // End of variables declaration//GEN-END:variables
