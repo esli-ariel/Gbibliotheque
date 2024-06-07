@@ -83,7 +83,7 @@ public class emprunts extends javax.swing.JFrame {
         String []user ={"Num_emp","emprunteurs","nom_adhe","livre_empruntés","titre_liv","date_emprumts","retour_norm","status"};
     
         DefaultTableModel model = new DefaultTableModel(null,user);
-        String sql =("select * from emprunts where retour_norm<? AND status=?");
+        String sql =("select * from emprunts ");
          
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
@@ -141,7 +141,7 @@ public class emprunts extends javax.swing.JFrame {
                 JOptionPane.showMessageDialog(this,"pas d'enregistrement trouvé");
             }else{
                 while (rs.next()) {
-                    Object o[]={
+                    Object o[]={  
                     rs.getString("Num_emp"),
                     rs.getString("emprunteurs"),
                     rs.getString("nom_adhe"),
@@ -219,7 +219,7 @@ public class emprunts extends javax.swing.JFrame {
         jLabel2 = new javax.swing.JLabel();
         date_todate = new com.toedter.calendar.JDateChooser();
         search_button = new rojerusan.RSMaterialButtonRectangle();
-        jLabel1 = new javax.swing.JLabel();
+        welcome = new javax.swing.JLabel();
         afficher = new rojerusan.RSMaterialButtonRectangle();
         jScrollPane1 = new javax.swing.JScrollPane();
         jTable2 = new rojeru_san.complementos.RSTableMetro();
@@ -333,9 +333,8 @@ public class emprunts extends javax.swing.JFrame {
             }
         });
 
-        jLabel1.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
-        jLabel1.setForeground(new java.awt.Color(0, 102, 102));
-        jLabel1.setText("jLabel1");
+        welcome.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
+        welcome.setForeground(new java.awt.Color(0, 102, 102));
 
         afficher.setBackground(new java.awt.Color(0, 255, 204));
         afficher.setText("TOUT AFFICHER");
@@ -361,7 +360,7 @@ public class emprunts extends javax.swing.JFrame {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(jLabel27, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(18, 18, 18)
-                        .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 140, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(welcome, javax.swing.GroupLayout.PREFERRED_SIZE, 140, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(270, 270, 270)
                         .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(54, 54, 54))
@@ -398,7 +397,7 @@ public class emprunts extends javax.swing.JFrame {
                         .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                                 .addComponent(jLabel27, javax.swing.GroupLayout.PREFERRED_SIZE, 42, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addComponent(jLabel1))
+                                .addComponent(welcome, javax.swing.GroupLayout.PREFERRED_SIZE, 42, javax.swing.GroupLayout.PREFERRED_SIZE))
                             .addGroup(jPanel3Layout.createSequentialGroup()
                                 .addContainerGap()
                                 .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
@@ -548,7 +547,6 @@ public class emprunts extends javax.swing.JFrame {
     private rojerusan.RSMaterialButtonRectangle afficher;
     private com.toedter.calendar.JDateChooser date_fromdate;
     private com.toedter.calendar.JDateChooser date_todate;
-    private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel11;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel23;
@@ -562,6 +560,7 @@ public class emprunts extends javax.swing.JFrame {
     private javax.swing.JScrollPane jScrollPane1;
     private rojeru_san.complementos.RSTableMetro jTable2;
     private rojerusan.RSMaterialButtonRectangle search_button;
+    private javax.swing.JLabel welcome;
     // End of variables declaration//GEN-END:variables
 
  

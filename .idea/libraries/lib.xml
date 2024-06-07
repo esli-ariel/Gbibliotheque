@@ -1,0 +1,22 @@
+<component name="libraryTable">
+  <library name="lib">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/dist/lib/RSFoto_v1.0.jar!/" />
+      <root url="jar://$PROJECT_DIR$/dist/lib/javax.mail-1.6.2.jar!/" />
+      <root url="jar://$PROJECT_DIR$/dist/lib/jcalendar-1.4.jar!/" />
+      <root url="jar://$PROJECT_DIR$/dist/lib/jfreechart-1.0.19.jar!/" />
+      <root url="jar://$PROJECT_DIR$/dist/lib/jcommon-1.0.23.jar!/" />
+      <root url="jar://$PROJECT_DIR$/dist/lib/mysql-connector-j-8.4.0.jar!/" />
+      <root url="jar://$PROJECT_DIR$/dist/lib/AbsoluteLayout.jar!/" />
+      <root url="jar://$PROJECT_DIR$/dist/lib/junit-4.6.jar!/" />
+      <root url="jar://$PROJECT_DIR$/dist/lib/swingx-core-1.6.2.jar!/" />
+      <root url="jar://$PROJECT_DIR$/dist/lib/RojeruSan.parte1.jar!/" />
+      <root url="jar://$PROJECT_DIR$/dist/lib/LibraryManagementSystem.jar!/" />
+      <root url="jar://$PROJECT_DIR$/dist/lib/jfreechart-1.0.19-demo.jar!/" />
+      <root url="jar://$PROJECT_DIR$/dist/lib/jd-gui-1.6.6.jar!/" />
+      <root url="jar://$PROJECT_DIR$/dist/lib/RSCalendar.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

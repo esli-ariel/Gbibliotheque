@@ -644,13 +644,13 @@ model.addColumn("nb_exemplaires");
             FileInputStream fis = new FileInputStream(image);
             Class.forName("com.mysql.cj.jdbc.Driver");
             con = (Connection) DriverManager.getConnection("jdbc:mysql://localhost/bd_bibliothèque", "bib_admin", "2006");
-            pst = con.prepareStatement("insert into adherents (nom_user,prenom_user,adresse,email,telephone,img_user)" + "values(?,?,?,?,?,?)");
+            pst = con.prepareStatement("insert into adherents (matricule_user,nom_user,prenom_user,adresse,email,telephone,img_user)" + "values(?,?,?,?,?,?,?)");
             pst.setString(1, code);
             pst.setString(2, nom);
             pst.setString(3, prenom);
             pst.setString(4, adresse);
-            pst.setString(5, telephone);
-            pst.setString(6, email);
+            pst.setString(6, telephone);
+            pst.setString(5, email);
             pst.setBlob(7, fis);
             pst.executeUpdate();
             JOptionPane.showMessageDialog(this, "Adherents ajouter avec succès!");
@@ -717,7 +717,7 @@ model.addColumn("nb_exemplaires");
         try {
 
             con = DriverManager.getConnection("jdbc:mysql://localhost:3306/bd_bibliothèque", "bib_admin", "2006");
-            String query1 = "delete from livre where matricule_user =?";
+            String query1 = "delete from adherents where matricule_user =?";
             pst = con.prepareStatement(query1);
             pst.setString(1, this.matricule);
             pst.execute();
@@ -759,8 +759,8 @@ model.addColumn("nb_exemplaires");
             pst.setString(2, nom);
             pst.setString(3, prenom);
             pst.setString(4, adresse);
-            pst.setString(5, telephone);
-            pst.setString(6, email);
+            pst.setString(6, telephone);
+            pst.setString(5, email);
             pst.setBlob(7, fis);
              
             pst.execute();
@@ -774,7 +774,7 @@ model.addColumn("nb_exemplaires");
         try {
 
             con = DriverManager.getConnection("jdbc:mysql://localhost:3306/bd_bibliothèque", "bib_admin", "2006");
-            String query1 = "delete from livre where matricule_user =?";
+            String query1 = "update adherents set matricule_user=?,nom_user=?,prenom_user=?,adresse=?,email=?,telephone=?,img_user=? where matricule_user=?";
             pst = con.prepareStatement(query1);
             pst.setString(1, this.matricule);
             pst.execute();

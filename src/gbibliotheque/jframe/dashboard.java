@@ -140,9 +140,7 @@ public class dashboard extends javax.swing.JFrame {
                 count = rs.getInt(1);
             }
 
-            rs.close();
-            rs.close();
-            con.close();
+            
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -240,6 +238,7 @@ public class dashboard extends javax.swing.JFrame {
     public int countEmpruntspasretour() {
         int noIssuedBooksCount = 0;
         try {
+             con = (Connection) DriverManager.getConnection("jdbc:mysql://localhost/bd_bibliothèque", "bib_admin", "2006");
             pst = con.prepareStatement("select * from emprunts where status=?");
             pst.setString(1, "emprunté");
             rs = pst.executeQuery();
@@ -263,6 +262,7 @@ public class dashboard extends javax.swing.JFrame {
         DefaultPieDataset barDataset = new DefaultPieDataset();
 
         try {
+            
             pst = con.prepareStatement("select status, count(*) as issue_count from emprunts group by status");
             rs = pst.executeQuery();
             while (rs.next()) {
